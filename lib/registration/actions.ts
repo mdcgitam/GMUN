@@ -5,6 +5,7 @@ import { getRegistrationPackageById } from "@/config/pricing";
 import { sendEmail } from "@/lib/email/service";
 import { registrationReceivedEmail } from "@/lib/email/templates";
 import { registrationSchema, type RegistrationInput } from "@/lib/validation/registration";
+import { isCommitteeRegistrationClosed } from "@/config/committees";
 
 const MAX_UPLOAD_BYTES = 5 * 1024 * 1024;
 const IMAGE_EXTENSIONS: Record<string, string> = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp" };
@@ -223,6 +224,14 @@ async function saveRegistration(
   const parsed = registrationSchema.safeParse(input);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Invalid registration details." };
   const data = parsed.data;
+
+  if (isCommitteeRegistrationClosed(data.committeePreference) || isCommitteeRegistrationClosed(data.committeePreference2)) {
+    return {
+      ok: false,
+      error: "Registrations for FIFA and UN Ad-hoc Committee are closed as capacity has been reached. Please choose from the available committees.",
+    };
+  }
+
   const pkg = getRegistrationPackageById(data.packageId);
 
   if (!pkg) return { ok: false, error: "Selected package is no longer available. Please choose another." };

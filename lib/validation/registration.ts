@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { indianStates } from "@/config/states";
 import { registrationPackages } from "@/config/pricing";
+import { committees } from "@/config/committees";
 
 export const genderOptions = ["Male", "Female", "Other", "Prefer not to say"] as const;
 export const gitamStudentOptions = ["Yes", "No"] as const;
@@ -74,6 +75,29 @@ function withCommitteeRules<T extends z.ZodType<{ committeePreference: string; c
   });
 }
 
+/** Disallows selection of committees that have reached their registration threshold. */
+function withOpenCommitteeRules<T extends z.ZodType<{ committeePreference: string; committeePreference2: string }>>(schema: T) {
+  return schema.superRefine((data, ctx) => {
+    const closedCommittees = new Map(
+      committees.filter((c) => c.isRegistrationClosed).map((c) => [c.id, c.shortName])
+    );
+    if (data.committeePreference && closedCommittees.has(data.committeePreference)) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Registrations for ${closedCommittees.get(data.committeePreference)} are closed (capacity reached).`,
+        path: ["committeePreference"],
+      });
+    }
+    if (data.committeePreference2 && closedCommittees.has(data.committeePreference2)) {
+      ctx.addIssue({
+        code: "custom",
+        message: `Registrations for ${closedCommittees.get(data.committeePreference2)} are closed (capacity reached).`,
+        path: ["committeePreference2"],
+      });
+    }
+  });
+}
+
 /** GITAM students must provide their registration number and campus. */
 function withGitamiteRules<T extends z.ZodType<{ gitamStudent: "Yes" | "No"; gitamRegistrationNumber?: string; gitamCampus?: string }>>(
   schema: T
@@ -102,11 +126,15 @@ function withGitamiteRules<T extends z.ZodType<{ gitamStudent: "Yes" | "No"; git
 
 export const detailsSchemaValidated = withGitamiteRules(detailsSchema);
 
-export const preferencesSchemaValidated = withCommitteeRules(withMunExperienceRules(preferencesSchema));
+export const preferencesSchemaValidated = withOpenCommitteeRules(
+  withCommitteeRules(withMunExperienceRules(preferencesSchema))
+);
 
-export const registrationSchema = withCommitteeRules(
-  withMunExperienceRules(
-    withGitamiteRules(detailsSchema.extend(preferencesSchema.shape).extend(consentSchema.shape))
+export const registrationSchema = withOpenCommitteeRules(
+  withCommitteeRules(
+    withMunExperienceRules(
+      withGitamiteRules(detailsSchema.extend(preferencesSchema.shape).extend(consentSchema.shape))
+    )
   )
 );
 

@@ -71,9 +71,23 @@ export default async function CommitteeDetailPage({ params }: PageProps<"/commit
               <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold">Executive Board</p>
               <p className="mt-2 text-sm text-ivory-faint">To be announced.</p>
             </div>
-            <Button href={`/register?committee=${committee.id}`} size="md" className="w-full">
-              Register for this Committee
-            </Button>
+            {committee.isRegistrationClosed ? (
+              <div className="space-y-3">
+                <div className="border border-line bg-surface/60 p-4 text-center">
+                  <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-gold">Registrations Closed</p>
+                  <p className="mt-1 text-xs leading-relaxed text-ivory-faint">
+                    This committee has reached its delegate capacity. Registrations are now closed.
+                  </p>
+                </div>
+                <Button href="/register" variant="secondary" size="md" className="w-full">
+                  Register for Other Committees
+                </Button>
+              </div>
+            ) : (
+              <Button href={`/register?committee=${committee.id}`} size="md" className="w-full">
+                Register for this Committee
+              </Button>
+            )}
           </div>
         </div>
       </Container>

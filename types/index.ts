@@ -32,6 +32,7 @@ export interface Committee {
   displayOrder: number;
   studyGuideUrl?: string | null;
   executiveBoard?: { name: string; role: string }[] | null;
+  isRegistrationClosed?: boolean;
 }
 
 export interface RegistrationRecord {

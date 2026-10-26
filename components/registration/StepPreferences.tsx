@@ -12,10 +12,12 @@ export function StepPreferences({
   data,
   errors,
   onChange,
+  allowClosedCommittees = false,
 }: {
   data: PreferencesInput;
   errors: Partial<Record<keyof PreferencesInput, string>>;
   onChange: <K extends keyof PreferencesInput>(key: K, value: PreferencesInput[K]) => void;
+  allowClosedCommittees?: boolean;
 }) {
   const words = wordCount(data.munExperienceDetail ?? "");
 
@@ -29,6 +31,15 @@ export function StepPreferences({
         <p className="text-[11px] font-medium uppercase tracking-[0.24em] text-gold sm:col-span-2">
           Committee &amp; Country Preferences
         </p>
+        {!allowClosedCommittees && (
+          <div className="border border-line bg-surface/60 p-4 sm:col-span-2">
+            <p className="text-xs leading-relaxed text-ivory-dim">
+              <span className="font-semibold text-gold">Notice:</span> Registrations for{" "}
+              <strong className="text-ivory">FIFA</strong> and{" "}
+              <strong className="text-ivory">UN Ad-hoc Committee</strong> are closed as delegate capacity has been reached. Please choose from the remaining open committees below.
+            </p>
+          </div>
+        )}
         <Field label="1st Committee Preference" htmlFor="committeePreference" error={errors.committeePreference}>
           <Select
             id="committeePreference"
@@ -42,11 +53,14 @@ export function StepPreferences({
             <option value="" disabled>
               Select a committee
             </option>
-            {committees.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.shortName}
-              </option>
-            ))}
+            {committees.map((c) => {
+              const isClosed = !allowClosedCommittees && c.isRegistrationClosed;
+              return (
+                <option key={c.id} value={c.id} disabled={isClosed}>
+                  {c.shortName}{c.isRegistrationClosed ? " (Full · Registrations Closed)" : ""}
+                </option>
+              );
+            })}
           </Select>
         </Field>
         <Field label="2nd Committee Preference" htmlFor="committeePreference2" error={errors.committeePreference2}>
@@ -60,11 +74,14 @@ export function StepPreferences({
             </option>
             {committees
               .filter((c) => c.id !== data.committeePreference)
-              .map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.shortName}
-                </option>
-              ))}
+              .map((c) => {
+                const isClosed = !allowClosedCommittees && c.isRegistrationClosed;
+                return (
+                  <option key={c.id} value={c.id} disabled={isClosed}>
+                    {c.shortName}{c.isRegistrationClosed ? " (Full · Registrations Closed)" : ""}
+                  </option>
+                );
+              })}
           </Select>
         </Field>
         <Field label="Country Preference" htmlFor="countryPreference" error={errors.countryPreference} className="sm:col-span-2">
@@ -72,7 +89,7 @@ export function StepPreferences({
             id="countryPreference"
             value={data.countryPreference}
             onChange={(e) => onChange("countryPreference", e.target.value)}
-            placeholder="e.g. India, France, or a character / portfolio for MCU, IFI and FIFA"
+            placeholder="e.g. India, France, or a character / portfolio for MCU and IFI"
           />
         </Field>
       </div>

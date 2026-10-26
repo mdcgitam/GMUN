@@ -41,6 +41,7 @@ export const committees: Committee[] = [
     displayOrder: 3,
     studyGuideUrl: null,
     executiveBoard: null,
+    isRegistrationClosed: true,
   },
   {
     id: "disec",
@@ -94,5 +95,14 @@ export const committees: Committee[] = [
     displayOrder: 7,
     studyGuideUrl: null,
     executiveBoard: null,
+    isRegistrationClosed: true,
   },
 ];
+
+export function isCommitteeRegistrationClosed(id: string): boolean {
+  return committees.some((c) => c.id === id && c.isRegistrationClosed);
+}
+
+export function getOpenCommittees(): Committee[] {
+  return committees.filter((c) => !c.isRegistrationClosed);
+}

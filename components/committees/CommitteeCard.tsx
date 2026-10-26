@@ -26,18 +26,32 @@ export function CommitteeCard({ committee }: { committee: Committee }) {
             // screen blend drops the logo's own black square so it sits directly on the glow
             className="object-contain p-5 mix-blend-screen transition-transform duration-700 ease-out group-hover:scale-[1.06]"
           />
-          <p className="absolute bottom-4 left-5 text-[11px] font-medium uppercase tracking-[0.16em] text-white/70">
-            {committee.type}
-          </p>
+          <div className="absolute bottom-4 left-5 right-5 flex items-center justify-between">
+            <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-white/70">
+              {committee.type}
+            </p>
+            {committee.isRegistrationClosed && (
+              <span className="border border-gold/40 bg-black/80 px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-gold">
+                Full · Closed
+              </span>
+            )}
+          </div>
         </div>
       )}
 
       <div className="flex flex-1 flex-col justify-between p-7">
         <div>
           {!logo && (
-            <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.16em] text-ivory-faint">
-              {committee.type}
-            </p>
+            <div className="mb-4 flex items-center justify-between">
+              <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-ivory-faint">
+                {committee.type}
+              </p>
+              {committee.isRegistrationClosed && (
+                <span className="border border-gold/40 bg-surface px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-gold">
+                  Full · Closed
+                </span>
+              )}
+            </div>
           )}
           <h3 className="font-display text-2xl text-ivory group-hover:text-gold">{committee.shortName}</h3>
           <p className="mt-1 text-sm text-ivory-dim">{committee.name}</p>

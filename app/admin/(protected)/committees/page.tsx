@@ -18,6 +18,7 @@ export default function AdminCommitteesPage() {
               <th className="py-3 pr-4 font-normal">Short Name</th>
               <th className="py-3 pr-4 font-normal">Committee</th>
               <th className="py-3 pr-4 font-normal">Type</th>
+              <th className="py-3 pr-4 font-normal">Status</th>
             </tr>
           </thead>
           <tbody>
@@ -26,6 +27,13 @@ export default function AdminCommitteesPage() {
                 <td className="py-3 pr-4 text-gold">{c.shortName}</td>
                 <td className="py-3 pr-4 text-ivory-dim">{c.name}</td>
                 <td className="py-3 pr-4 text-ivory-faint">{c.type}</td>
+                <td className="py-3 pr-4">
+                  {c.isRegistrationClosed ? (
+                    <span className="text-xs font-medium text-danger">Closed (Capacity Reached)</span>
+                  ) : (
+                    <span className="text-xs font-medium text-success">Open</span>
+                  )}
+                </td>
               </tr>
             ))}
           </tbody>

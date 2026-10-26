@@ -108,7 +108,7 @@ export function EditRegistrationForm({
 
       <div className="space-y-10">
         <StepDetails data={details} errors={detailsErrors} onChange={updateDetails} />
-        <StepPreferences data={preferences} errors={preferencesErrors} onChange={updatePreferences} />
+        <StepPreferences data={preferences} errors={preferencesErrors} onChange={updatePreferences} allowClosedCommittees />
       </div>
 
       {formError && (

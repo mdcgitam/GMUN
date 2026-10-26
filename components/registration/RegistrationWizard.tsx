@@ -60,8 +60,10 @@ const emptyDetails: DetailsInput = {
 };
 
 function buildEmptyPreferences(initialCommittee?: string): PreferencesInput {
-  // /register?committee=<id> (from a committee page) pre-selects the 1st preference.
-  const committeePreference = committees.some((c) => c.id === initialCommittee) ? initialCommittee! : "";
+  // /register?committee=<id> (from a committee page) pre-selects the 1st preference if registration is open.
+  const committeePreference = committees.some((c) => c.id === initialCommittee && !c.isRegistrationClosed)
+    ? initialCommittee!
+    : "";
   return {
     committeePreference,
     committeePreference2: "",
